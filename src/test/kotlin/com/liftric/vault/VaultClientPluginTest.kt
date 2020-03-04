@@ -2,11 +2,12 @@ package com.liftric.vault
 
 import com.bettercloud.vault.VaultException
 import junit.framework.TestCase.*
+import org.gradle.kotlin.dsl.extra
+import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.contrib.java.lang.system.EnvironmentVariables
-
 
 class VaultClientPluginTest {
 
@@ -63,8 +64,10 @@ class VaultClientPluginTest {
         environmentVariables.set("VAULT_TOKEN", "aacc")
         val project = ProjectBuilder.builder().build()
         project.pluginManager.apply("com.liftric.vault-client-plugin")
+        project.vault().retryIntervalMilliseconds = 10
         project.tasks.register("exampleSecret", VaultSecretTask::class.java, "/secret/test")
         val vaultSecretTask = project.tasks.withType(VaultSecretTask::class.java).single()
         vaultSecretTask.loadSecret()
+        val secrets: Map<String, String> by vaultSecretTask.extra
     }
 }

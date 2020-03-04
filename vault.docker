@@ -1,0 +1,14 @@
+FROM vault
+ENV VAULT_DEV_ROOT_TOKEN_ID myroottoken
+#RUN /usr/local/bin/docker-entrypoint.sh server -dev & \
+#    sleep 1 &&\
+#    export VAULT_ADDR='http://0.0.0.0:8200' &&\
+#    export VAULT_TOKEN='myroottoken' &&\
+#    vault token lookup &&\
+#    vault secrets enable -version=2 kv &&\
+#    vault kv put secret/example examplestring=helloworld exampleint=1337 &&\
+#    vault kv get secret/example
+COPY vault.sh .
+RUN chmod +x vault.sh
+ENTRYPOINT ["/vault.sh"]
+CMD []

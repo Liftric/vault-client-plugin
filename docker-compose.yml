@@ -1,0 +1,10 @@
+version: '3'
+services:
+  vault:
+    build:
+      dockerfile: vault.docker
+      context: .
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroottoken
+    ports:
+      - "8200:8200"

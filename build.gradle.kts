@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.3.61"
     `java-gradle-plugin`
+    id("org.gradle.kotlin.kotlin-dsl") version "1.3.4"
     `maven-publish`
     id("com.gradle.plugin-publish") version "0.10.1"
 }
@@ -14,7 +15,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly(gradleApi())
+    implementation(gradleApi())
+    implementation(kotlin("gradle-plugin"))
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.bettercloud:vault-java-driver:5.1.0")
     testImplementation(gradleTestKit())
@@ -30,7 +32,11 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
 }
-
+publishing {
+    repositories {
+        mavenLocal()
+    }
+}
 gradlePlugin {
     plugins {
         create("VaultClientPlugin") {
