@@ -2,7 +2,7 @@ import com.liftric.vault.vault
 
 plugins {
     java
-    id("com.liftric.vault-client-plugin") version "1.0.0-SNAPSHOT"
+    id("com.liftric.vault-client-plugin") // version known from buildSrc
 }
 vault {
     vaultAddress = "http://localhost:8200"
@@ -12,13 +12,20 @@ vault {
 }
 tasks {
     val needsSecrets by creating {
-        val secrets = project.vault("secret/example")
+        val secrets = project.objects.mapProperty<String, String>()
+        secrets.set(project.vault("secret/example"))
         doLast {
-            if (secrets["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
-            if (secrets["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
+            if (secrets.get()["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
+            if (secrets.get()["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
+            println("getting secrets succeeded!")
+        }
+    }
+    val fromBuildSrc by creating {
+        doLast {
+            if (with(Configs) { secretStuff() != "helloworld:1337" }) throw kotlin.IllegalStateException("config with secret couldn't be read")
         }
     }
     val build by existing {
-        dependsOn(needsSecrets)
+        dependsOn(needsSecrets, fromBuildSrc)
     }
 }

@@ -7,8 +7,8 @@ pluginManagement {
 
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id == "de.friday.elasticmq") {
-                useModule("de.friday:elasticmq-gradle-plugin:${requested.version}")
+            if (requested.id.id == "com.liftric.vault-client-plugin") {
+                useModule("com.liftric.vault:vault-client-plugin:${requested.version}")
             }
         }
     }

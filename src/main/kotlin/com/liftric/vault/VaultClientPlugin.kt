@@ -17,6 +17,7 @@ fun Project.vault(): VaultClientExtension {
 }
 
 fun Project.vault(secretPath: String): Map<String, String> {
+    println("[vault] loading $secretPath")
     val vault = project.vault()
     if (vault.vaultAddress == null) {
         throw IllegalStateException("neither the env variable`VAULT_ADDR` nor the `vaultAddress` config set")
