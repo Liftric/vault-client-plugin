@@ -6,7 +6,7 @@ import com.bettercloud.vault.VaultConfig
 /**
  * Actual client connecting to the configured vault server
  */
-internal class VaultClient(
+class VaultClient(
     private val extension: VaultClientExtension
 ) {
     private val config by lazy {

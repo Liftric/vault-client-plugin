@@ -15,3 +15,15 @@ fun Project.vault(): VaultClientExtension {
     return extensions.getByName(extensionName) as? VaultClientExtension
         ?: throw IllegalStateException("$extensionName is not of the correct type")
 }
+
+fun Project.vault(secretPath: String): Map<String, String> {
+    val vault = project.vault()
+    if (vault.vaultAddress == null) {
+        throw IllegalStateException("neither the env variable`VAULT_ADDR` nor the `vaultAddress` config set")
+    }
+    if (vault.vaultToken == null) {
+        throw IllegalStateException("neither the env variable`VAULT_TOKEN` nor the `vaultToken` config set")
+    }
+    val client = VaultClient(vault)
+    return client.get(secretPath)
+}

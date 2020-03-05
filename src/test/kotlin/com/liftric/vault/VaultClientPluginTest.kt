@@ -46,28 +46,4 @@ class VaultClientPluginTest {
             assertEquals("aacc", vaultToken)
         }
     }
-
-    @Test
-    fun testTaskRegistration() {
-        val project = ProjectBuilder.builder().build()
-        project.pluginManager.apply("com.liftric.vault-client-plugin")
-        project.tasks.create("exampleSecret", VaultSecretTask::class.java, "/secret/path")
-        project.tasks.create("secondSecret", VaultSecretTask::class.java, "/secret/path")
-        assertEquals(2, project.tasks.withType(VaultSecretTask::class.java).size)
-        assertNotNull(project.tasks.getByName("exampleSecret"))
-        assertNotNull(project.tasks.getByName("secondSecret"))
-    }
-
-    @Test(expected = VaultException::class)
-    fun testTaskExecutionFailure() {
-        environmentVariables.set("VAULT_ADDR", "aabb")
-        environmentVariables.set("VAULT_TOKEN", "aacc")
-        val project = ProjectBuilder.builder().build()
-        project.pluginManager.apply("com.liftric.vault-client-plugin")
-        project.vault().retryIntervalMilliseconds = 10
-        project.tasks.register("exampleSecret", VaultSecretTask::class.java, "/secret/test")
-        val vaultSecretTask = project.tasks.withType(VaultSecretTask::class.java).single()
-        vaultSecretTask.loadSecret()
-        val secrets: Map<String, String> by vaultSecretTask.extra
-    }
 }
