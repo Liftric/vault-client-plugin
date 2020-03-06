@@ -7,12 +7,13 @@ import com.bettercloud.vault.VaultConfig
  * Actual client connecting to the configured vault server
  */
 class VaultClient(
-    private val extension: VaultClientExtension
+    private val extension: VaultClientExtension,
+    token: String
 ) {
     private val config by lazy {
         VaultConfig()
             .address(extension.vaultAddress)
-            .token(extension.vaultToken)
+            .token(token)
             .build()
     }
     private val vault by lazy { Vault(config) }

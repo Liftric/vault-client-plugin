@@ -19,7 +19,7 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle.kts" }}
-  integration-password:
+  integration-token:
     machine: true
     steps:
       - checkout
@@ -31,7 +31,25 @@ jobs:
       - run: docker-compose build
       - run: docker-compose up -d
       - run: ./gradlew publishToMavenLocal -x check
-      - run: ./gradlew build -x check -p integration-test
+      - run: ./gradlew build -x check -p integration-token
+      - run: docker-compose kill
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+  integration-tokenfile:
+    machine: true
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: docker-compose build
+      - run: docker-compose up -d
+      - run: ./gradlew publishToMavenLocal -x check
+      - run: ./gradlew build -x check -p integration-tokenfile
       - run: docker-compose kill
       - save_cache:
           paths:
@@ -43,6 +61,9 @@ workflows:
   all:
     jobs:
       - build
-      - integration-password:
+      - integration-token:
+          requires:
+            - build
+      - integration-tokenfile:
           requires:
             - build

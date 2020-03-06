@@ -1,4 +1,4 @@
-rootProject.name = "integration-test"
+rootProject.name = "integration-token"
 pluginManagement {
     repositories {
         gradlePluginPortal()
