@@ -1,12 +1,14 @@
 # vault-client-plugin (gradle plugin)
 
-As of 2020-03-04 this is a heavy work in progress!
-
 # Usage
 The vault address and token will be read from the env:
 `VAULT_ADDR` `VAULT_TOKEN`
 
-You can specify them in the vault configuration as well, but that should only be used for testing and is highly discouraged.
+You can also specify a path to a file containing the token (vault login - CLI- automatically creates this).
+This path can also be specified via env var: `VAULT_TOKEN_FILE_PATH`
+
+You can specify the token in the vault configuration as well (see below), but that should only be used for testing 
+and is highly discouraged. The vaultAddress and vaultTokenFilePath configs should be fine though.
 
 Usage example in you build script:
 ```
@@ -20,6 +22,7 @@ plugins {
 vault {
     vaultAddress = "http://localhost:8200"
     vaultToken = "myroottoken" // don't do that in production code!
+    vaultTokenFilePath = "~/.vault-token" // from file is prefered over vaultToken 
     maxRetries = 2
     retryIntervalMilliseconds = 200
 }
