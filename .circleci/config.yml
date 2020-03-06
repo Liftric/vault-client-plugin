@@ -9,16 +9,34 @@ jobs:
       TERM: dumb
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run: ./gradlew build
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
   integration-password:
     machine: true
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run: docker-compose build
       - run: docker-compose up -d
       - run: ./gradlew publishToMavenLocal -x check
       - run: ./gradlew build -x check -p integration-test
       - run: docker-compose kill
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
 
 workflows:
   version: 2
