@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:13-jdk
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - run: ./gradlew build
+  integration-password:
+    machine: true
+    steps:
+      - checkout
+      - run: docker-compose build
+      - run: docker-compose up -d
+      - run: ./gradlew publishToMavenLocal -x check
+      - run: ./gradlew build -x check -p integration-test
+      - run: docker-compose kill
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - build
+      - integration-password:
+          requires:
+            - build
