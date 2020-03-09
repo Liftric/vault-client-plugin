@@ -8,7 +8,8 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "com.liftric.vault-client-plugin") {
-                useModule("com.liftric.vault:vault-client-plugin:${requested.version}")
+                val vaultClientPluginVersion = file("../build/version").readText().trim()
+                useModule("com.liftric.vault:vault-client-plugin:${vaultClientPluginVersion}")
             }
         }
     }

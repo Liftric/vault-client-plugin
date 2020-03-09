@@ -47,10 +47,15 @@ tasks {
             println("[VersionDisplayTask] version=$version")
         }
     }
-}
-versioning {
-    releaseMode = "tag"
-    displayMode = "tag"
+    val build by existing {
+        doLast {
+            file("$buildDir/version").apply {
+                if (exists()) delete()
+                createNewFile()
+                writeText(project.version.toString())
+            }
+        }
+    }
 }
 publishing {
     repositories {

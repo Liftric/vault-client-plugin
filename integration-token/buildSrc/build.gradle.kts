@@ -6,5 +6,6 @@ repositories {
     mavenLocal()
 }
 dependencies {
-    implementation("com.liftric.vault:vault-client-plugin:1.0.0-SNAPSHOT")
+    val vaultClientPluginVersion = file("../../build/version").readText().trim()
+    implementation("com.liftric.vault:vault-client-plugin:$vaultClientPluginVersion")
 }
