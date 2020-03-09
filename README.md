@@ -1,4 +1,7 @@
 # vault-client-plugin (gradle plugin)
+![GitHub](https://img.shields.io/github/license/Liftric/vault-client-plugin)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Liftric/vault-client-plugin)
+[![CircleCI](https://circleci.com/gh/Liftric/vault-client-plugin/tree/master.svg?style=svg)](https://circleci.com/gh/Liftric/vault-client-plugin/tree/master)
 
 # Usage
 The vault address and token will be read from the env:
