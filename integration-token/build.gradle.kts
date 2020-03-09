@@ -12,11 +12,10 @@ vault {
 }
 tasks {
     val needsSecrets by creating {
-        val secrets = project.objects.mapProperty<String, String>()
         doLast {
-            secrets.set(project.vault("secret/example"))
-            if (secrets.get()["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
-            if (secrets.get()["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
+            val secrets: Map<String, String> = project.vault("secret/example")
+            if (secrets["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
+            if (secrets["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
             println("getting secrets succeeded!")
         }
     }

@@ -14,8 +14,7 @@ You can specify the token in the vault configuration as well (see below), but th
 and is highly discouraged. The vaultAddress and vaultTokenFilePath configs should be fine though.
 
 Usage example in you build script:
-```
-## build scripts
+
 ```kotlin
 import com.liftric.vault.vault
 
@@ -31,10 +30,23 @@ vault {
 }
 tasks {
     val needsSecrets by creating {
-        val secrets = project.objects.mapProperty<String, String>()
+        val secrets: Map<String, String> = project.vault("secret/example")
     }
 }
 ```
+
+See the `integration-` sub projects for working examples.
+
+## configuration
+After the plugin is applied, the vault extension is registered with the following settings: 
+
+Property | Description | default value 
+---|---|---
+vaultAddress | vault address to be used | result of `System.getenv()["VAULT_ADDR"]`
+vaultToken | vault token to be used (it's recommend you don't set this in your build file) | result of `System.getenv()["VAULT_TOKEN"]`
+vaultTokenFilePath | vault token file path (if set has precedence over vaultToken) | result of `System.getenv()["VAULT_TOKEN_FILE_PATH"]`
+maxRetries | vault client max retry count | 5
+retryIntervalMilliseconds | time between vault request retries | 1000
 
 ## buildSrc
 You can also use the plugin directly in you buildSrc code:
@@ -69,3 +81,5 @@ with(Configs) {
     [...] // use it
 }
 ```
+
+See `integration-token` for an example.
