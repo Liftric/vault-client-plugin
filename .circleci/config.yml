@@ -86,3 +86,12 @@ workflows:
       - integration-tokenfile:
           requires:
             - build
+      - publish-plugin:
+          requires:
+            - integration-token
+            - integration-tokenfile
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
