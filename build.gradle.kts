@@ -61,6 +61,19 @@ tasks {
     val publish by existing
     val publishToMavenLocal by existing
     listOf(build.get(), publish.get(), publishToMavenLocal.get()).forEach { it.dependsOn(createVersionFile) }
+
+    val setupPluginsLogin by creating {
+        // see: https://github.com/gradle/gradle/issues/1246
+        val publishKey: String? = System.getenv("GRADLE_PUBLISH_KEY")
+        val publishSecret: String? = System.getenv("GRADLE_PUBLISH_SECRET")
+        if (publishKey != null && publishSecret != null) {
+            println("[setupPluginsLogin] seeting plugin portal credentials from env")
+            System.getProperties().setProperty("gradle.publish.key", publishKey)
+            System.getProperties().setProperty("gradle.publish.secret", publishSecret)
+        }
+    }
+    val publishPlugins by existing
+    publishPlugins.get().dependsOn(setupPluginsLogin)
 }
 publishing {
     repositories {
