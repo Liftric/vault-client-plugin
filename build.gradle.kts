@@ -11,7 +11,13 @@ plugins {
 
 group = "com.liftric.vault"
 allprojects {
-    version = versioning.info.full
+    version = with(versioning.info) {
+        if (branch == "HEAD" && dirty.not()) {
+            tag
+        } else {
+            full
+        }
+    }
 }
 
 repositories {
