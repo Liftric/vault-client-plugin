@@ -24,7 +24,7 @@ plugins {
 vault {
     vaultAddress = "http://localhost:8200"
     vaultToken = "myroottoken" // don't do that in production code!
-    vaultTokenFilePath = "~/.vault-token" // from file is prefered over vaultToken 
+    vaultTokenFilePath = "${System.getProperty("user.home")}/.vault-token" // from file is prefered over vaultToken 
     maxRetries = 2
     retryIntervalMilliseconds = 200
 }
