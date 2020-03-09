@@ -1,13 +1,18 @@
+import net.nemerosa.versioning.tasks.VersionDisplayTask
+
 plugins {
     kotlin("jvm") version "1.3.61"
     `java-gradle-plugin`
     id("org.gradle.kotlin.kotlin-dsl") version "1.3.4"
     `maven-publish`
     id("com.gradle.plugin-publish") version "0.10.1"
+    id("net.nemerosa.versioning") version "2.12.0"
 }
 
 group = "com.liftric.vault"
-version = "1.0.0-SNAPSHOT"
+allprojects {
+    version = versioning.info.full
+}
 
 repositories {
     mavenCentral()
@@ -31,6 +36,15 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+    withType<VersionDisplayTask> {
+        doLast {
+            println("[VersionDisplayTask] version=$version")
+        }
+    }
+}
+versioning {
+    releaseMode = "tag"
+    displayMode = "tag"
 }
 publishing {
     repositories {
