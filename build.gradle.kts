@@ -3,7 +3,7 @@ import net.nemerosa.versioning.tasks.VersionDisplayTask
 plugins {
     kotlin("jvm") version "1.3.61"
     `java-gradle-plugin`
-    id("org.gradle.kotlin.kotlin-dsl") version "1.3.4"
+    id("org.gradle.kotlin.kotlin-dsl") version "1.3.3"
     `maven-publish`
     id("com.gradle.plugin-publish") version "0.10.1"
     id("net.nemerosa.versioning") version "2.12.0"
@@ -47,8 +47,9 @@ tasks {
             println("[VersionDisplayTask] version=$version")
         }
     }
-    val build by existing {
+    val createVersionFile by creating {
         doLast {
+            mkdir(buildDir)
             file("$buildDir/version").apply {
                 if (exists()) delete()
                 createNewFile()
@@ -56,6 +57,10 @@ tasks {
             }
         }
     }
+    val build by existing
+    val publish by existing
+    val publishToMavenLocal by existing
+    listOf(build.get(), publish.get(), publishToMavenLocal.get()).forEach { it.dependsOn(createVersionFile) }
 }
 publishing {
     repositories {
