@@ -19,9 +19,88 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+  integration-token:
+    machine: true
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: docker-compose build
+      - run: docker-compose up -d
+      - run: ./gradlew publishToMavenLocal -x check
+      - run: ./gradlew build -x check -p integration-token
+      - run: docker-compose kill
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+  integration-tokenfile:
+    machine: true
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: docker-compose build
+      - run: docker-compose up -d
+      - run: ./gradlew publishToMavenLocal -x check
+      - run: ./gradlew build -x check -p integration-tokenfile
+      - run: docker-compose kill
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+  publish-plugin:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: ./gradlew versionDisplay
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
 
 workflows:
   version: 2
   all:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - integration-token:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+      - integration-tokenfile:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+      - publish-plugin:
+          requires:
+            - integration-token
+            - integration-tokenfile
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
