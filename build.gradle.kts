@@ -71,6 +71,7 @@ gradlePlugin {
     plugins {
         create("VaultClientPlugin") {
             id = "com.liftric.vault-client-plugin"
+            displayName = "vault-client-plugin"
             implementationClass = "com.liftric.vault.VaultClientPlugin"
             description = "Read and use vault secrets in your build script"
         }
