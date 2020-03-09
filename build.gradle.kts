@@ -66,3 +66,9 @@ gradlePlugin {
         }
     }
 }
+pluginBundle {
+    website = "https://github.com/Liftric/vault-client-plugin"
+    vcsUrl = "https://github.com/Liftric/vault-client-plugin"
+    description = "Gradle plugin to use Vault secrets in build scripts"
+    tags = listOf("vault", "hashicorp", "secret")
+}
