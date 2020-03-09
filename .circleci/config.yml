@@ -58,22 +58,22 @@ jobs:
   publish-plugin:
     docker:
       - image: circleci/openjdk:8-jdk
-      working_directory: ~/repo
-      environment:
-        JVM_OPTS: -Xmx3200m
-        TERM: dumb
-      steps:
-        - checkout
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "build.gradle.kts" }}
-              # fallback to using the latest cache if no exact match is found
-              - v1-dependencies-
-        - run: ./gradlew versionDisplay
-        - save_cache:
-            paths:
-              - ~/.gradle
-            key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: ./gradlew versionDisplay
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
 
 workflows:
   version: 2
