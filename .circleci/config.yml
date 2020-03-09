@@ -79,13 +79,22 @@ workflows:
   version: 2
   all:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
       - integration-token:
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
       - integration-tokenfile:
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
       - publish-plugin:
           requires:
             - integration-token
@@ -93,3 +102,5 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
