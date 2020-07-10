@@ -17,20 +17,24 @@ Usage example in you build script:
 
 ```kotlin
 import com.liftric.vault.vault
+import com.liftric.vault.GetVaultSecretTask
 
 plugins {
     id("com.liftric.vault-client-plugin") version ("<latest>")
 }
 vault {
-    vaultAddress = "http://localhost:8200"
-    vaultToken = "myroottoken" // don't do that in production code!
-    vaultTokenFilePath = "${System.getProperty("user.home")}/.vault-token" // from file is prefered over vaultToken 
-    maxRetries = 2
-    retryIntervalMilliseconds = 200
+    vaultAddress.set("http://localhost:8200")
+    vaultToken.set("myroottoken") // don't do that in production code!
+    vaultTokenFilePath.set("${System.getProperty("user.home")}/.vault-token") // from file is prefered over vaultToken 
+    maxRetries.set(2)
+    retryIntervalMilliseconds.set(200)
 }
 tasks {
-    val needsSecrets by creating {
-        val secrets: Map<String, String> = project.vault("secret/example")
+    val needsSecrets by creating(GetVaultSecretTask::class) {
+        secretPath.set("secret/example")
+        doLast {
+            val secrets: Map<String, String> = secret.get()
+        }
     }
 }
 ```
@@ -68,8 +72,15 @@ import com.liftric.vault.vault
 import org.gradle.api.Project
 
 object Configs {
-    fun Project.secretStuff(): String {
+    fun Project.secretStuff(): Any {
         val secrets = project.vault("secret/example")
+        [...] // use the secrets
+    }
+    fun Project.secretStuff(): Any {
+        val needsSecrets: GetVaultSecretTask = tasks.getByName<GetVaultSecretTask>("needsSecrets").apply {
+            execute()
+        }
+        val secret = needsSecrets.secret.get()
         [...] // use the secrets
     }
 }
