@@ -2,32 +2,70 @@ package com.liftric.vault
 
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
+import com.bettercloud.vault.VaultException
 
 /**
  * Actual client connecting to the configured vault server
  */
 class VaultClient(
-    private val extension: VaultClientExtension,
-    token: String
+    token: String,
+    private val vaultAddress: String,
+    private val maxRetries: Int,
+    private val retryIntervalMilliseconds: Int
 ) {
     private val config by lazy {
-        VaultConfig()
-            .address(extension.vaultAddress)
-            .token(token)
-            .build()
-    }
-    private val vault by lazy { Vault(config) }
-
-    fun get(secretPath: String): Map<String, String> = try {
-        vault.withRetries(extension.maxRetries, extension.retryIntervalMilliseconds)
-            .logical()
-            .read(secretPath)
-            .data
-    } catch (e: Exception) {
-        println("[vault] exception while calling vault at ${extension.vaultAddress}: ${e.message}")
-        if (extension.vaultAddress?.startsWith("https") == false) {
-            println("[vault] is your vault address correct? It doesn't start with https!")
+        try {
+            VaultConfig()
+                .address(vaultAddress)
+                .token(token)
+                .build()
+        } catch (e: VaultException) {
+            println("[vault] exception while creating vault client for $vaultAddress: ${e.message}")
+            throw e
         }
-        throw e
+    }
+    private val vault by lazy {
+        try {
+            Vault(config)
+        } catch (e: VaultException) {
+            println(
+                "[vault] exception while preparing vault client config for $vaultAddress: ${e.message} - token valid?"
+                    .replace('\n', '#')
+            )
+            throw e
+        }
+    }
+
+    fun get(secretPath: String): Map<String, String> {
+        verifyTokenValid()
+        return try {
+            vault.withRetries(maxRetries, retryIntervalMilliseconds)
+                .logical()
+                .read(secretPath)
+                .data.also {
+                    if (it.isEmpty()) error("[vault] secret response contains no data - secret exists? token has correct rights to access it?")
+                }
+        } catch (e: VaultException) {
+            println(
+                "[vault] exception while calling vault at $vaultAddress: ${e.message} - secret exists? token has correct rights to access it?"
+                    .replace('\n', '#')
+            )
+            if (vaultAddress.startsWith("https").not()) {
+                println("[vault] is your vault address correct? It doesn't start with https!")
+            }
+            throw e
+        }
+    }
+
+    private fun verifyTokenValid() {
+        try {
+            vault.auth().lookupSelf()
+        } catch (e: VaultException) {
+            println(
+                "[vault] exception while verifying vault token validity for $vaultAddress: ${e.message}"
+                    .replace('\n', '#')
+            )
+            throw e
+        }
     }
 }

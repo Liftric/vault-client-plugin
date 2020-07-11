@@ -1,22 +1,24 @@
 import com.liftric.vault.vault
+import com.liftric.vault.GetVaultSecretTask
 
 plugins {
     java
     id("com.liftric.vault-client-plugin") // version known from buildSrc
 }
 vault {
-    vaultAddress = "http://localhost:8200"
-    vaultToken = "myroottoken" // don't do that in production code!
-    maxRetries = 2
-    retryIntervalMilliseconds = 200
+    vaultAddress.set("http://localhost:8200")
+    vaultToken.set("myroottoken") // don't do that in production code!
+    maxRetries.set(2)
+    retryIntervalMilliseconds.set(200)
 }
 tasks {
-    val needsSecrets by creating {
+    val needsSecrets by creating(GetVaultSecretTask::class) {
+        secretPath.set("secret/example")
         doLast {
-            val secrets: Map<String, String> = project.vault("secret/example")
-            if (secrets["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
-            if (secrets["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
-            println("getting secrets succeeded!")
+            val secret = secret.get()
+            if (secret["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
+            if (secret["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
+            println("getting secret succeeded!")
         }
     }
     val fromBuildSrc by creating {
