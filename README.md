@@ -59,7 +59,7 @@ plugins {
     `kotlin-dsl`
 }
 repositories {
-    jcenter()
+    gradlePluginPortal()
 }
 dependencies {
     implementation("com.liftric.vault:vault-client-plugin:<latest>")

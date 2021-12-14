@@ -3,8 +3,8 @@ import net.nemerosa.versioning.tasks.VersionDisplayTask
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    id("com.gradle.plugin-publish") version "0.11.0"
-    id("net.nemerosa.versioning") version "2.12.0"
+    id("com.gradle.plugin-publish") version "0.18.0"
+    id("net.nemerosa.versioning") version "2.15.1"
 }
 
 group = "com.liftric.vault"
@@ -20,7 +20,6 @@ allprojects {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -29,7 +28,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.bettercloud:vault-java-driver:5.1.0")
     testImplementation(gradleTestKit())
-    testImplementation("junit:junit:4.12")
+    testImplementation("junit:junit:4.13.2")
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
 }
 
