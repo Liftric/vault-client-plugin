@@ -2,8 +2,11 @@ plugins {
     `kotlin-dsl`
 }
 repositories {
-    jcenter()
     mavenLocal()
+    mavenCentral()
+    maven {
+        url = uri("https://plugins.gradle.org/m2/")
+    }
 }
 dependencies {
     val vaultClientPluginVersion = file("../../build/version").readText().trim()

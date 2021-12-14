@@ -59,7 +59,9 @@ plugins {
     `kotlin-dsl`
 }
 repositories {
-    jcenter()
+    maven {
+        url = uri("https://plugins.gradle.org/m2/")
+    }
 }
 dependencies {
     implementation("com.liftric.vault:vault-client-plugin:<latest>")
