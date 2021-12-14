@@ -4,9 +4,7 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url = uri("https://plugins.gradle.org/m2/")
-    }
+    gradlePluginPortal()
 }
 dependencies {
     val vaultClientPluginVersion = file("../../build/version").readText().trim()
