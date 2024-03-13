@@ -41,4 +41,8 @@ open class VaultClientExtension(project: Project) {
     @Input
     @Optional
     val retryIntervalMilliseconds: Property<Int> = project.objects.property()
+
+    @Input
+    @Optional
+    val namespace: Property<String> = project.objects.property()
 }

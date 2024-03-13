@@ -34,7 +34,27 @@ tasks {
             if (with(Configs) { secretStuff() != "helloworld:1337" }) throw kotlin.IllegalStateException("config with secret couldn't be read")
         }
     }
+    val needsSecretsFromSimpleNamespace by creating(GetVaultSecretTask::class) {
+        secretPath.set("secret/example")
+        namespace.set("test")
+        doLast {
+            val secret = secret.get()
+            if (secret["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read from test namespace")
+            if (secret["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read from test namespace")
+            println("getting secret succeeded!")
+        }
+    }
+    val needsSecretsFromNestedNamespace by creating(GetVaultSecretTask::class) {
+        secretPath.set("secret/example")
+        namespace.set("test/child")
+        doLast {
+            val secret = secret.get()
+            if (secret["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read from test/child namespace")
+            if (secret["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read from test/child namespace")
+            println("getting secret succeeded!")
+        }
+    }
     val build by existing {
-        dependsOn(needsSecretsConfigTime, needsSecrets, fromBuildSrc)
+        dependsOn(needsSecretsConfigTime, needsSecrets, fromBuildSrc, needsSecretsFromSimpleNamespace, needsSecretsFromNestedNamespace)
     }
 }

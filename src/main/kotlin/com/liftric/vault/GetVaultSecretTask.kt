@@ -46,6 +46,10 @@ open class GetVaultSecretTask : DefaultTask() {
     @Optional
     val retryIntervalMilliseconds: Property<Int> = project.objects.property()
 
+    @Input
+    @Optional
+    val namespace: Property<String> = project.objects.property()
+
     @Internal
     // actually used as output...
     val secret: MapProperty<String, String> = project.objects.mapProperty()
@@ -63,7 +67,8 @@ open class GetVaultSecretTask : DefaultTask() {
                 token = token,
                 vaultAddress = address,
                 maxRetries = maxRetries,
-                retryIntervalMilliseconds = retryIntervalMilliseconds
+                retryIntervalMilliseconds = retryIntervalMilliseconds,
+                namespace = namespace.orNull
             ).get(path)
         )
     }
