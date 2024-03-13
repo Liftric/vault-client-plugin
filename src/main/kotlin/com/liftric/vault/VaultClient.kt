@@ -11,7 +11,8 @@ class VaultClient(
     token: String,
     private val vaultAddress: String,
     private val maxRetries: Int,
-    private val retryIntervalMilliseconds: Int
+    private val retryIntervalMilliseconds: Int,
+    private val namespace: String?
 ) {
     private val config by lazy {
         try {
@@ -40,11 +41,12 @@ class VaultClient(
         verifyTokenValid()
         return try {
             vault.withRetries(maxRetries, retryIntervalMilliseconds)
-                .logical()
-                .read(secretPath)
-                .data.also {
-                    if (it.isEmpty()) error("[vault] secret response contains no data - secret exists? token has correct rights to access it?")
-                }
+                 .logical()
+                 .withNameSpace(namespace)
+                 .read(secretPath)
+                 .data.also {
+                     if (it.isEmpty()) error("[vault] secret response contains no data - secret exists? token has correct rights to access it?")
+                 }
         } catch (e: VaultException) {
             println(
                 "[vault] exception while calling vault at $vaultAddress: ${e.message} - secret exists? token has correct rights to access it?"

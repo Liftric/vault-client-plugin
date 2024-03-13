@@ -34,12 +34,14 @@ fun Project.vault(secretPath: String): Map<String, String> {
     val address = GetVaultSecretTask.determinAddress(vaultAddress = extension.vaultAddress.orNull)
     val maxRetries = extension.maxRetries.getOrElse(Defaults.MAX_RETRIES)
     val retryIntervalMilliseconds = extension.retryIntervalMilliseconds.getOrElse(Defaults.RETRY_INTERVAL_MILLI)
+    val namespace = extension.namespace.orNull
     println("[vault] getting `$secretPath` from $address")
 
     return VaultClient(
         token = token,
         vaultAddress = address,
         maxRetries = maxRetries,
-        retryIntervalMilliseconds = retryIntervalMilliseconds
+        retryIntervalMilliseconds = retryIntervalMilliseconds,
+        namespace = namespace
     ).get(secretPath)
 }
