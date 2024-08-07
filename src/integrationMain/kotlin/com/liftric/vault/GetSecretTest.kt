@@ -1,13 +1,37 @@
+package com.liftric.vault
+
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.testcontainers.junit.jupiter.Testcontainers
+import java.io.File
+
+@Testcontainers
+class GetSecretTest : ContainerBase() {
+    private val getSecretTestLocation = "build/getSecretTest"
+
+    @Test
+    fun testGetSecretTask() {
+        val projectDir = File(getSecretTestLocation)
+        projectDir.mkdirs()
+
+        projectDir.resolve("settings.gradle.kts").writeText("")
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
 import com.liftric.vault.vault
 import com.liftric.vault.GetVaultSecretTask
 
 plugins {
     java
-    id("com.liftric.vault-client-plugin") // version known from buildSrc
+    id("com.liftric.vault-client-plugin")
 }
+
+group = "com.liftric.test"
+version = "1.0.1"
+
 vault {
-    vaultAddress.set("http://localhost:8200")
-    vaultToken.set("myroottoken") // don't do that in production code!
+    vaultAddress.set("$VAULT_ADDR")
+    vaultToken.set("$VAULT_TOKEN")
     maxRetries.set(2)
     retryIntervalMilliseconds.set(200)
 }
@@ -29,12 +53,19 @@ tasks {
             println("getting secret succeeded!")
         }
     }
-    val fromBuildSrc by creating {
-        doLast {
-            if (with(Configs) { secretStuff() != "helloworld:1337" }) throw kotlin.IllegalStateException("config with secret couldn't be read")
-        }
-    }
     val build by existing {
-        dependsOn(needsSecretsConfigTime, needsSecrets, fromBuildSrc)
+        dependsOn(needsSecretsConfigTime, needsSecrets)
+    }
+}
+        """
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withArguments("build")
+            .withPluginClasspath()
+            .build()
+
+        assertTrue(result.output.contains("BUILD SUCCESSFUL"))
     }
 }

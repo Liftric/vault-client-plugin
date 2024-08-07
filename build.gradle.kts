@@ -1,7 +1,7 @@
 plugins {
     `kotlin-dsl`
-    id("com.gradle.plugin-publish") version "1.2.1"
-    id("net.nemerosa.versioning") version "3.1.0"
+    alias(libs.plugins.gradlePluginPublish)
+    alias(libs.plugins.nemerosaVersioning)
 }
 
 group = "com.liftric.vault"
@@ -19,17 +19,34 @@ allprojects {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
+
+sourceSets {
+    val main by getting
+    val integrationMain by creating {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
 
 dependencies {
     implementation(gradleApi())
     implementation(kotlin("gradle-plugin"))
     implementation(kotlin("stdlib-jdk8"))
     implementation("com.bettercloud:vault-java-driver:5.1.0")
+
     testImplementation(gradleTestKit())
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("com.github.stefanbirkner:system-rules:1.19.0")
+    testImplementation(libs.junitJupiter)
+
+    "integrationMainImplementation"("com.bettercloud:vault-java-driver:5.1.0")
+    "integrationMainImplementation"(gradleTestKit())
+    "integrationMainImplementation"(libs.junitJupiter)
+    "integrationMainImplementation"(libs.testContainersJUnit5)
+    "integrationMainImplementation"(libs.testContainersMain)
 }
+
 
 tasks {
     compileKotlin {
@@ -38,9 +55,24 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+
+    val test by existing
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
         }
+        systemProperty("org.gradle.testkit.dir", gradle.gradleUserHomeDir)
     }
 
+    register<Test>("integrationTest") {
+        val integrationMain by sourceSets
+        description = "Runs the integration tests"
+        group = "verification"
+        testClassesDirs = integrationMain.output.classesDirs
+        classpath = integrationMain.runtimeClasspath
+        mustRunAfter(test)
+        useJUnitPlatform()
     }
 }
 
@@ -53,6 +85,7 @@ publishing {
 gradlePlugin {
     website.set("https://github.com/Liftric/vault-client-plugin")
     vcsUrl.set("https://github.com/Liftric/vault-client-plugin")
+    testSourceSets(sourceSets["integrationMain"])
     plugins {
         create("VaultClientPlugin") {
             id = "com.liftric.vault-client-plugin"

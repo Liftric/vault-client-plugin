@@ -57,7 +57,7 @@ open class GetVaultSecretTask : DefaultTask() {
         val maxRetries = maxRetries.getOrElse(MAX_RETRIES)
         val retryIntervalMilliseconds = retryIntervalMilliseconds.getOrElse(RETRY_INTERVAL_MILLI)
         val path = secretPath.get()
-        println("[vault] getting `$path` from $address")
+        println("[vaultFoobar] getting `$path` from $address")
         secret.set(
             VaultClient(
                 token = token,

@@ -1,28 +1,30 @@
 package com.liftric.vault
 
-import junit.framework.TestCase.*
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Rule
-import org.junit.Test
-import org.junit.contrib.java.lang.system.EnvironmentVariables
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 class VaultClientPluginTest {
 
-    @get:Rule
-    val environmentVariables = EnvironmentVariables()
+    private lateinit var project: org.gradle.api.Project
+
+    @BeforeEach
+    fun setup(@TempDir tempDir: Path) {
+        project = ProjectBuilder.builder().withProjectDir(tempDir.toFile()).build()
+    }
 
     @Test
     fun testApply() {
-        val project = ProjectBuilder.builder().build()
         project.pluginManager.apply("com.liftric.vault-client-plugin")
         assertNotNull(project.plugins.getPlugin(VaultClientPlugin::class.java))
     }
 
     @Test
     fun testExtension() {
-        val project = ProjectBuilder.builder().build()
         project.pluginManager.apply("com.liftric.vault-client-plugin")
         assertNotNull(project.vault())
     }
-
 }
