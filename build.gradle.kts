@@ -1,10 +1,7 @@
-import net.nemerosa.versioning.tasks.VersionDisplayTask
-
 plugins {
     `kotlin-dsl`
-    `maven-publish`
-    id("com.gradle.plugin-publish") version "0.18.0"
-    id("net.nemerosa.versioning") version "2.15.1"
+    id("com.gradle.plugin-publish") version "1.2.1"
+    id("net.nemerosa.versioning") version "3.1.0"
 }
 
 group = "com.liftric.vault"
@@ -15,6 +12,8 @@ allprojects {
         } else {
             full
         }
+    }.also {
+        println("version=$version")
     }
 }
 
@@ -39,57 +38,28 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
-    withType<VersionDisplayTask> {
-        doLast {
-            println("[VersionDisplayTask] version=$version")
         }
     }
-    val createVersionFile by creating {
-        doLast {
-            mkdir(buildDir)
-            file("$buildDir/version").apply {
-                if (exists()) delete()
-                createNewFile()
-                writeText(project.version.toString())
-            }
-        }
-    }
-    val build by existing
-    val publish by existing
-    val publishToMavenLocal by existing
-    listOf(build.get(), publish.get(), publishToMavenLocal.get()).forEach { it.dependsOn(createVersionFile) }
 
-    val setupPluginsLogin by creating {
-        // see: https://github.com/gradle/gradle/issues/1246
-        val publishKey: String? = System.getenv("GRADLE_PUBLISH_KEY")
-        val publishSecret: String? = System.getenv("GRADLE_PUBLISH_SECRET")
-        if (publishKey != null && publishSecret != null) {
-            println("[setupPluginsLogin] seeting plugin portal credentials from env")
-            System.getProperties().setProperty("gradle.publish.key", publishKey)
-            System.getProperties().setProperty("gradle.publish.secret", publishSecret)
-        }
     }
-    val publishPlugins by existing
-    publishPlugins.get().dependsOn(setupPluginsLogin)
 }
+
 publishing {
     repositories {
         mavenLocal()
     }
 }
+
 gradlePlugin {
+    website.set("https://github.com/Liftric/vault-client-plugin")
+    vcsUrl.set("https://github.com/Liftric/vault-client-plugin")
     plugins {
         create("VaultClientPlugin") {
             id = "com.liftric.vault-client-plugin"
             displayName = "vault-client-plugin"
             implementationClass = "com.liftric.vault.VaultClientPlugin"
             description = "Read and use vault secrets in your build script"
+            tags.set(listOf("vault", "hashicorp", "secret"))
         }
     }
-}
-pluginBundle {
-    website = "https://github.com/Liftric/vault-client-plugin"
-    vcsUrl = "https://github.com/Liftric/vault-client-plugin"
-    description = "Gradle plugin to use Vault secrets in build scripts"
-    tags = listOf("vault", "hashicorp", "secret")
 }
