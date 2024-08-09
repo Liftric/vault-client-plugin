@@ -13,7 +13,7 @@ allprojects {
             full
         }
     }.also {
-        println("version=$version")
+        println("version=$it")
     }
 }
 
