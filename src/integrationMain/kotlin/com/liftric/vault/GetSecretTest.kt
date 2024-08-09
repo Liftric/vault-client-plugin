@@ -53,8 +53,14 @@ tasks {
             println("getting secret succeeded!")
         }
     }
-    val build by existing {
-        dependsOn(needsSecretsConfigTime, needsSecrets)
+    val needsSecrets2 by creating(GetVaultSecretTask::class) {
+        secretPath.set("secret/example2")
+        doLast {
+            val secret = secret.get()
+            if (secret["examplestring2"] != "helloworld2") throw kotlin.IllegalStateException("examplestring2 couldn't be read")
+            if (secret["exampleint2"]?.toInt() != 1338) throw kotlin.IllegalStateException("exampleint2 couldn't be read")
+            println("getting secret succeeded!")
+        }
     }
 }
         """
@@ -62,7 +68,7 @@ tasks {
 
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
-            .withArguments("build")
+            .withArguments("needsSecrets", "needsSecrets2")
             .withPluginClasspath()
             .build()
 

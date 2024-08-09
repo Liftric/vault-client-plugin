@@ -43,6 +43,13 @@ abstract class ContainerBase {
                     "exampleint" to 1337,
                 ) as Map<String, Any>?
             )
+
+            vault.logical().write(
+                "secret/example2", hashMapOf(
+                    "examplestring2" to "helloworld2",
+                    "exampleint2" to 1338,
+                ) as Map<String, Any>?
+            )
         }
 
     }
