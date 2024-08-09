@@ -35,14 +35,14 @@ dependencies {
     implementation(gradleApi())
     implementation(kotlin("gradle-plugin"))
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.bettercloud:vault-java-driver:5.1.0")
+    implementation(libs.javaVaultDriver)
 
     testImplementation(gradleTestKit())
     testImplementation(libs.junitJupiter)
 
-    "integrationMainImplementation"("com.bettercloud:vault-java-driver:5.1.0")
     "integrationMainImplementation"(gradleTestKit())
     "integrationMainImplementation"(libs.junitJupiter)
+    "integrationMainImplementation"(libs.javaVaultDriver)
     "integrationMainImplementation"(libs.testContainersJUnit5)
     "integrationMainImplementation"(libs.testContainersMain)
 }
