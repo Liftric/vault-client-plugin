@@ -9,13 +9,11 @@ class VaultClientPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create(extensionName, VaultClientExtension::class.java, project)
         project.tasks.withType(GetVaultSecretTask::class.java) {
-            project.afterEvaluate {
                 vaultAddress.set(extension.vaultAddress)
                 vaultToken.set(extension.vaultToken)
                 vaultTokenFilePath.set(extension.vaultTokenFilePath)
                 maxRetries.set(extension.maxRetries)
                 retryIntervalMilliseconds.set(extension.retryIntervalMilliseconds)
-            }
         }
     }
 }
