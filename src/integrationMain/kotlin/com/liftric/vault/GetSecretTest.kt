@@ -35,15 +35,7 @@ vault {
     maxRetries.set(2)
     retryIntervalMilliseconds.set(200)
 }
-val configTimeSecrets: Map<String, String> = vault("secret/example")
 tasks {
-    val needsSecretsConfigTime by creating {
-        doLast {
-            if (configTimeSecrets["examplestring"] != "helloworld") throw kotlin.IllegalStateException("examplestring couldn't be read")
-            if (configTimeSecrets["exampleint"]?.toInt() != 1337) throw kotlin.IllegalStateException("exampleint couldn't be read")
-            println("getting secrets succeeded!")
-        }
-    }
     val needsSecrets by creating(GetVaultSecretTask::class) {
         secretPath.set("secret/example")
         doLast {

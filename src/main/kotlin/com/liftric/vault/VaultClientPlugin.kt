@@ -22,22 +22,3 @@ fun Project.vault(): VaultClientExtension {
     return extensions.getByName(extensionName) as? VaultClientExtension
         ?: throw IllegalStateException("$extensionName is not of the correct type")
 }
-
-fun Project.vault(secretPath: String): Map<String, String> {
-    val extension: VaultClientExtension = vault()
-    val token = GetVaultSecretTask.determineToken(
-        vaultToken = extension.vaultToken.orNull,
-        vaultTokenFilePath = extension.vaultTokenFilePath.orNull
-    )
-    val address = GetVaultSecretTask.determinAddress(vaultAddress = extension.vaultAddress.orNull)
-    val maxRetries = extension.maxRetries.getOrElse(Defaults.MAX_RETRIES)
-    val retryIntervalMilliseconds = extension.retryIntervalMilliseconds.getOrElse(Defaults.RETRY_INTERVAL_MILLI)
-    println("[vault] getting `$secretPath` from $address")
-
-    return VaultClient(
-        token = token,
-        vaultAddress = address,
-        maxRetries = maxRetries,
-        retryIntervalMilliseconds = retryIntervalMilliseconds
-    ).get(secretPath)
-}
