@@ -2,7 +2,7 @@ version: '3'
 services:
   vault:
     build:
-      dockerfile: vault.docker
+      dockerfile: vault.Dockerfile
       context: .
     environment:
       VAULT_DEV_ROOT_TOKEN_ID: myroottoken

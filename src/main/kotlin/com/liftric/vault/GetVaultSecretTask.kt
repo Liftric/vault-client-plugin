@@ -53,11 +53,11 @@ open class GetVaultSecretTask : DefaultTask() {
     @TaskAction
     fun execute() {
         val token = determineToken(vaultToken = vaultToken.orNull, vaultTokenFilePath = vaultTokenFilePath.orNull)
-        val address = determinAddress(vaultAddress = vaultAddress.orNull)
+        val address = determineAddress(vaultAddress = vaultAddress.orNull)
         val maxRetries = maxRetries.getOrElse(MAX_RETRIES)
         val retryIntervalMilliseconds = retryIntervalMilliseconds.getOrElse(RETRY_INTERVAL_MILLI)
         val path = secretPath.get()
-        println("[vault] getting `$path` from $address")
+        println("[vaultFoobar] getting `$path` from $address")
         secret.set(
             VaultClient(
                 token = token,
@@ -83,7 +83,7 @@ open class GetVaultSecretTask : DefaultTask() {
             }
         }
 
-        fun determinAddress(vaultAddress: String?): String {
+        fun determineAddress(vaultAddress: String?): String {
             val finalVaultAddress = vaultAddress ?: System.getenv()[VAULT_ADDR_ENV]
             return finalVaultAddress?.trim() ?: error("neither `vaultAddress` nor `$VAULT_ADDR_ENV` env var provided!")
         }
